@@ -24,7 +24,7 @@ static uint8_t cursor_y = 0;
 static void move_cursor()
 {
     uint16_t cursor_location = cursor_x + cursor_y * 80;
-    outb(0x3d4, 14)；
+    outb(0x3d4, 14);
     outb(0x3d5, cursor_location >> 8);
     outb(0x3d4, 15);
     outb(0x3d5, cursor_location);
@@ -45,7 +45,7 @@ static void scroll()
             video_mem[i] = video_mem[i + 80];
         //最后一行空格填充
         for (uint32_t i = 24 * 80; i < 25 * 80; i++)
-            video_men[i] = blank;
+            video_mem[i] = blank;
 
         cursor_y = 24;
     }
@@ -55,24 +55,24 @@ static void scroll()
 void console_clear()
 {
     uint8_t   attribute_byte = 0x0f;
-    uint_16_t blank = 0x20 | (attribute << 8);
+    uint16_t blank = 0x20 | (attribute_byte << 8);
     for (uint32_t i = 0; i < 25 * 80; i++)
-        video_menp[i] = blank;
+        video_mem[i] = blank;
     cursor_x = 0;
     cursor_y = 0;
     move_cursor();
 }
 
 //输出一个字符
-void console_putc_color(char c, screen_color_t back , sc_color_t fore)
+void console_putc_color(char c, screen_color_t back , screen_color_t fore)
 {
     uint8_t backcolor = (uint8_t) back;
     uint8_t forecolor = (uint8_t) fore;
     uint8_t attribute_byte = (backcolor << 4) | (forecolor);
-    uint16_t atribute      = attribute << 8;
+    uint16_t attribute     = attribute_byte << 8;
 
     //0x8退格 0x9tab
-    if （c == 0x8 && cursor_x)
+    if (c == 0x8 && cursor_x)
         cursor_x--;
     else if (c == 0x9)
         cursor_x = (cursor_x + 8) & (~7);
@@ -83,12 +83,12 @@ void console_putc_color(char c, screen_color_t back , sc_color_t fore)
         cursor_x = 0;
         cursor_y++;
     }
-    else if (c == ' ')
+    else
     {
         video_mem[cursor_x + cursor_y * 80] = c | attribute;
         cursor_x++;
     }
-
+    
     //满80换行
     if (cursor_x >= 80)
     {
@@ -100,9 +100,54 @@ void console_putc_color(char c, screen_color_t back , sc_color_t fore)
     move_cursor();
 }
 
-//屏幕打印字符串
+//屏幕打印字符串(黑底白字)
 void console_print(char *cstr)
 {
-    while (cstr++)
-        console_putc_color(*cstr++, sc_black, sc_white);23
+    while (*cstr)
+        console_putc_color(*cstr++, sc_black, sc_white);
 }
+
+//屏幕打印字符串带颜色
+void console_print_color(char *cstr,screen_color_t back,screen_color_t fore)
+{
+    while(*cstr)
+        console_putc_color(*cstr++,back,fore);
+}
+
+void console_print_hex(uint32_t n, screen_color_t back , screen_color_t fore)
+{
+    console_print_color("0x",back,fore);
+    if (n == 0)
+        console_print_color("0",back,fore);
+    char a[8];
+    uint16_t count = 0;
+    while (n)
+    {
+        uint32_t temp = n % 16;
+        if (temp < 10)
+            a[count++] = '0' + temp;
+        else
+            a[count++] = 'A' + temp - 10;
+        n >>= 4;
+    }
+
+    for (uint16_t i = count - 1; i >= 0; i--)
+        console_putc_color(a[i],back,fore);
+}
+
+//屏幕输出十进制整数
+void console_print_dec(uint32_t n, screen_color_t back, screen_color_t fore)
+{
+    char a[32];
+    uint16_t count = 0;
+    while (n)
+    {
+        uint32_t temp = n % 10;
+        a[count++] = temp + '0';
+        n /= 10;
+    }
+
+    for (uint16_t i = count - 1; i >= 0; i--)
+        console_putc_color(a[i], back, fore);
+}
+
