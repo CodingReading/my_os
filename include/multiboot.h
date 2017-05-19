@@ -47,7 +47,7 @@ struct multiboot_t{
     uint32_t vbe_interface_seg;
     uint32_t vbe_interface_off;
     uint32_t vbe_interface_len;
-} _attribute_((packed)) multiboot_t;
+} __attribute__((packed)) multiboot_t;
 
 /**
  *size 是相关结构的大小,单位是字节,它可能大于最小值 20
@@ -64,7 +64,7 @@ struct mmap_entry_t{
     uint32_t length_low;
     uint32_t length_high;
     uint32_t type;
-} _attribute_((packed)) mmap_entry_t;
+} __attribute__((packed)) mmap_entry_t;
 
 //声明全局的multiboot *指针
 extern multiboot_t *glb_mboot_ptr;

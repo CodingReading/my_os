@@ -24,10 +24,12 @@ inline int strcmp(const char *str1, const char *str2)
 {
     while (*str1 && *str2)
     {
-        if (*str1++ > *str2++)
+        if (*str1 > *str2)
             return 1;
-        else if (*str1++ < *str2++)
+        else if (*str1 < *str2)
             return -1;
+        str1++;
+        str2++;
     }
 
     if ((*str1 == 0) && (*str2 == 0)) 
@@ -41,6 +43,7 @@ inline char* strcpy(char *dest, const char *src)
 {
     while (*src)
         *dest++ = *src++;
+    return dest;
 }
 
 inline uint32_t strlen(const char *str)

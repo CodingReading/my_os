@@ -19,7 +19,7 @@ struct elf_section_header_t{
     uint32_t info;
     uint32_t addralign;
     uint32_t entsize;
-}_attribute_((packed)) elf_section_header_t;
+}__attribute__((packed)) elf_section_header_t;
 
 //ELF符号格式
 typedef 
@@ -30,7 +30,7 @@ struct elf_symbol_t{
     uint8_t  info;
     uint8_t  other;
     uint16_t shndx;
-}_attribute_((packed)) elf_symbol_t;
+}__attribute__((packed)) elf_symbol_t;
 
 //ELF信息
 typedef

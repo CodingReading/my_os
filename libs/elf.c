@@ -19,24 +19,25 @@ elf_t elf_from_multiboot(multiboot_t *mb)
          const char* name = (const char*)(shstrtab + sh[i].name);
          //GRUB提供的multiboot信息中寻找
          //内核ELF格式所提供的字符串表和符号表
-         if (strcmp(name,".strtab" == 0))
+         if (strcmp(name,".strtab") == 0)
          {
              elf.strtab = (const char*)sh[i].addr;
              elf.strtabsz = sh[i].size;
          }
 
-         if (strcmp(name,".symtab" == 0))
+         if (strcmp(name,".symtab") == 0)
          {
              elf.symtab = (elf_symbol_t *)sh[i].addr;
              elf.symtabsz = sh[i].size;
          }
 
-         return elf;
-     }
+    }
+
+     return elf;
 }
 
 //查看ELF的符号信息
-const char* elf_lookup_symbol(int32_t add, elf_t* elf)
+const char* elf_lookup_symbol(uint32_t addr, elf_t* elf)
 {
     
     for (int i = 0; i < (elf->symtabsz / sizeof(elf_symbol_t)); i++)
