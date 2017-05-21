@@ -19,7 +19,7 @@ struct idt_entry_t
     uint16_t    sel;        //段选择子
     uint8_t     always0;    //置零
     uint8_t     flags;      //
-    uint16_t    base_high   //中断处理程序16~31位
+    uint16_t    base_high;  //中断处理程序16~31位
 }__attribute__((packed)) idt_entry_t;
 
 typedef
@@ -43,7 +43,7 @@ struct pt_regs_t
     uint32_t edx;
     uint32_t ecx;
     uint32_t eax;
-    uint32_t int_n0;    //中断号
+    uint32_t int_num;    //中断号
     uint32_t err_code;  //错误码
 
     //以下由处理器自动压入

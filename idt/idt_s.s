@@ -1,3 +1,11 @@
+
+[GLOBAL load_idt_to_idtr]
+load_idt_to_idtr:
+    mov  eax, [esp + 4]
+    lidt [eax]
+    ret
+.end:
+
 ;定义两个中断处理函数的宏
 
 ;宏汇编技术 无错误代码的中断
@@ -8,7 +16,7 @@ isr%1:
     push 0              ;push无效的中断错误码，用来占位，
                         ;方便清理的时候统一处理有中断号和无中断号的例程
     push %1             ;push中断号
-    jmp isr_common_stub
+    jmp  isr_common_stub
 %endmacro
 
 ;有错误代码的中断
@@ -17,7 +25,7 @@ isr%1:
 isr%1:
     cli                 ;关中断
     push %1             ;push中断号
-    jmp isr_common_stub
+    jmp  isr_common_stub
 %endmacro
 
 ;定义中断处理函数
@@ -60,3 +68,33 @@ ISR_NOERRCODE 31
 ; 32 ~ 255 用户自定义
 ISR_NOERRCODE 255
 
+[GLOBAL isr_common_stub]
+[EXTERN isr_handler]
+;中断服务例程
+isr_common_stub:
+    pusha                   ;Pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
+    mov  ax, ds              
+    push eax                ;保留数据段描述符
+
+    mov ax, 0x10            ;加载内核数据段描述符
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
+    push esp                ;esp的值为pt_regs指针值
+    call isr_handler        
+    add  esp, 4             ;清栈
+
+    pop ebx                 ;恢复原来的数据段寄存器
+    mov ds, bx
+    mov es, bx
+    mov fs, bx
+    mov gs, bx
+    mov ss, bx
+
+    popa
+    add esp, 8
+    iret
+.end:
