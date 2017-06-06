@@ -18,9 +18,10 @@ int kern_entry()
 	*	然后jmp入 isr_common_stub 将 pt_regs 结构体中剩余寄存器压栈
 	*   然后将此时esp值(实际处理函数的参数pt_regs*)压栈,调用isr_handle函数
 	*/
-	asm volatile ("int $0x3");
-	asm volatile ("int $0x4");
+	init_timer(200);
 	//panic("test");
 
+	//开中断
+	asm volatile ("sti");
 	return 0;
 }
