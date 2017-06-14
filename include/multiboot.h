@@ -56,6 +56,9 @@ struct multiboot_t{
  *type 是相应地址区间的类型,1 代表可用,所有其它的值代表保留区域 RAM
 */
 
+//GRUB将内存探测的结果按每个分段整理为mmap_entry结构体
+//的数组，mmap_addr是这个结构体数组的首地址，mmap_length
+//是结构体数组的长度
 typedef
 struct mmap_entry_t{
     uint32_t size;          //size 是不含size自身变量的大小
